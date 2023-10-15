@@ -9,14 +9,16 @@
 char *historyFilePath(info_t *info)
 {
 	char *dir = _getenv(info, "HOME=");
-	if (!dir) return NULL;
+	if (!dir)
+		return (NULL);
 
 	size_t len = _strlen(dir) + _strlen(HIST_FILE) + 2;
 	char *buf = malloc(len);
-	if (!buf) return NULL;
+	if (!buf)
+		return (NULL);
 
 	_sprintf(buf, "%s/%s", dir, HIST_FILE);
-	return buf;
+	return (buf);
 }
 /**
  * saveHistory - Store history in a file.
@@ -27,15 +29,15 @@ char *historyFilePath(info_t *info)
 int saveHistory(info_t *info)
 {
 	char *filename = historyFilePath(info);
-	
+
 	if (!filename)
-		return -1;
+		return (-1);
 
 	int fd = open(filename, O_CREAT | O_TRUNC | O_RDWR, 0644);
 	free(filename);
 
 	if (fd == -1)
-		return -1;
+		return (-1);
 
 	list_t *node = info->history;
 	while (node)
@@ -48,7 +50,7 @@ int saveHistory(info_t *info)
 	_putfd(BUF_FLUSH, fd);
 	close(fd);
 
-	return 1;
+	return (1);
 }
 /**
  * _rdhistory - Reads and updates the history list from a file.
@@ -61,12 +63,12 @@ int _rdhistory(info_t *info)
 	int linecount = 0;
 	char *file = get_history_file(info);
 	if (!file)
-		return 0;
+		return (0);
 
 	int fd = open(file, O_RDONLY);
 	free(file);
 	if (fd == -1)
-		return 0;
+		return (0);
 
 	struct stat st;
 	if (!fstat(fd, &st) && st.st_size > 1)
@@ -101,14 +103,14 @@ int _rdhistory(info_t *info)
 					}
 
 					renumber_history(info);
-					return info->histcount;
+					return (info->histcount);
 			}
 			free(buf);
 		}
 	}
 
 	close(fd);
-	return 0;
+	return (0);
 }
 
 /**
@@ -129,7 +131,7 @@ int add_history_entry(info_t *info, char *entry, int linecount)
 	add_node_end(&node, entry, linecount);
 	info->history = (info->history) ? info->history : node;
 
-	return 0;
+	return (0);
 }
 
 /**

@@ -10,8 +10,11 @@
 int define_alias(parameters_t *parameters, char *alias_string)
 {
 	char *equal_position = _find_char(alias_string, '=');
-	if (!equal_position) return 1;
-	if (!*++equal_position) return forget_alias(parameters, alias_string);
+
+	if (!equal_position)
+		return (1);
+	if (!*++equal_position)
+		return (forget_alias(parameters, alias_string));
 	forget_alias(parameters, alias_string);
 	return (append_to_aliases(&(parameters->aliases), alias_string, 0) == NULL);
 }
@@ -33,14 +36,13 @@ int display_alias(list_t *alias_node)
 		_putchar('\'');
 		_puts(equal_sign + 1);
 		_puts("'\n");
-		return 0;
+		return (0);
 	}
-	return 1;
+	return (1);
 }
 /**
- * Manage alias settings, similar to the 'alias' command.
- *
- * @param info A structure containing potential arguments.
+ * Manage alias settings - Similar to the 'alias' command.
+ * @param info: A structure containing potential arguments.
  *
  * Return: Always 0.
  */
@@ -52,14 +54,13 @@ int manageAlias(info_t *info)
 
 	if (info->argc == 1)
 	{
-        // Display all aliases
-	node = info->alias;
+		node = info->alias;
 	while (node)
 	{
 		displayAlias(node);
 		node = node->next;
 	}
-	return 0;
+	return (0);
 	}
 
 	for (i = 1; info->argv[i]; i++)
@@ -71,5 +72,5 @@ int manageAlias(info_t *info)
 			displayAlias(nodeStartsWith(info->alias, info->argv[i], '='));
 	}
 
-	return 0;
+	return (0);
 }

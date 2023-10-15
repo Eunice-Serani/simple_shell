@@ -1,7 +1,8 @@
 #include "_v2shell.h"
 
 /**
- * ssize_t readAndBufferInput(data_t *data, char **buffer, size_t *length) - Read
+ * ssize_t readAndBufferInput(data_t *data
+ *   char **buffer, size_t *length) - Read
  * data from the specified buffer and return
  * @param data: Structure.
  * @param buffer: Address of the buffer.
@@ -34,7 +35,7 @@ ssize_t readAndBufferInput(data_t *data, char **buffer, size_t *length)
 			data->commandBuffer = buffer;
 		}
 	}
-	return bytesRead;
+	return (bytesRead);
 }
 
 /**
@@ -55,7 +56,7 @@ ssize_t processInput(data_t *data)
 	r = inputBuffer(data, &buf);
 
 	if (r == -1)
-		return -1;
+		return (-1);
 
 	if (buf)
 	{
@@ -69,11 +70,11 @@ ssize_t processInput(data_t *data)
 		}
 
 		*b = p;
-		return getCmdLength(p);
+		return (getCmdLength(p));
 	}
 
 	*b = buf;
-	return r;
+	return (r);
 }
 /**
  * readBuffer - Read a buffer.
@@ -88,14 +89,14 @@ ssize_t readBuffer(data_t *d, char *b, size_t *n)
 	ssize_t r = 0;
 
 	if (*n)
-		return 0;
+		return (0);
 
 	r = read(d->readFd, b, READ_BUFFER_SIZE);
 
 	if (r >= 0)
 		*n = r;
 
-	return r;
+	return (r);
 }
 
 /**
@@ -122,11 +123,12 @@ int readLine(data_t *d, char **b, size_t *n)
 
 	r = readBuffer(d, inBuf, &len);
 	if (r == -1 || (r == 0 && len == 0))
-		return -1;
+		return (-1);
 
 	c = _strchr(inBuf + i, '\n');
 	k = c ? 1 + (unsigned int)(c - inBuf) : len;
 	new_p = _realloc(p, s, s ? s + k : k + 1);
+
 	if (!new_p)
 		return (p ? free(p), -1 : -1);
 
@@ -142,7 +144,7 @@ int readLine(data_t *d, char **b, size_t *n)
 	if (n)
 		*n = s;
 	*b = p;
-	return s;
+	return (s);
 }
 /**
  * sigintHandler - Ctrl-C signal handler.
