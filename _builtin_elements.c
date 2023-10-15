@@ -30,8 +30,10 @@ int exit_shell(shell_info_t *shell_info)
 	return (-2);
 }
 /**
- * change_current_directory - Modify the current working directory of the process.
- * @info: A structure that may contain arguments, ensuring a consistent function prototype.
+ * change_current_directory - Modify the current working directory
+ *   of the process.
+ * @info: A structure that may contain arguments
+ *    ensuring a consistent function prototype.
  *
  * Return: Always returns 0.
  */
@@ -47,7 +49,7 @@ int change_current_directory(info_t *info)
 	{
 		new_directory = _getenv(info, "HOME=");
 		if (!new_directory)
-			change_dir_result = /* TODO: Define behavior for this case */
+			change_dir_result;
 				chdir((new_directory = _getenv(info, "PWD=")) ? new_directory : "/");
 		else
 			change_dir_result = chdir(new_directory);
@@ -61,7 +63,7 @@ int change_current_directory(info_t *info)
 			return (1);
 		}
 		_puts(_getenv(info, "OLDPWD=")), _putchar('\n');
-		change_dir_result = /* TODO: Define behavior for this case */
+		change_dir_result;
 			chdir((new_directory = _getenv(info, "OLDPWD=")) ? new_directory : "/");
 	}
 	else
@@ -78,10 +80,10 @@ int change_current_directory(info_t *info)
 	}
 	return (0);
 }
-
- /**
+/**
  * display_help - Display help information.
- * @info: A structure that may contain arguments, ensuring a consistent function prototype.
+ * @info: A structure that may contain arguments
+ * ensuring a consistent function prototype.
  *
  * Return: Always returns 0.
  */
@@ -92,25 +94,26 @@ int display_help(info_t *info)
 	argument_array = info->argv;
 	_puts("The 'help' function call works, but the function is not yet implemented.\n");
 	if (0)
-		_puts(*argument_array); /* Temporary workaround to suppress unused variable warning */
+		_puts(*argument_array);
 	return (0);
 }
 /**
  * show_history - Display the command history with line numbers.
- * @info: A structure that may contain arguments, ensuring a consistent function prototype.
+ * @info: A structure that may contain arguments
+ *   ensuring a consistent function prototype.
  *
  * Return: Always returns 0.
  */
 int show_history(info_t *info)
 {
 	print_command_history(info->history);
-	return 0;
+	return (0);
 }
 /**
- * Unset an alias by making it empty.
+ * Unset an alias - by making it empty.
  *
- * @param info A data structure containing relevant information.
- * @param alias The alias to unset.
+ * @param info: A data structure containing relevant information.
+ * @param alias: The alias to unset.
  *
  * Return: 0 on success, 1 on failure.
  */
@@ -125,10 +128,12 @@ int unset_alias(info_t *info, char *alias)
 int unset_alias(info_t *info, char *alias)
 {
 	char *p = _strchr(alias, '=');
-	if (!p) return 1;
+
+	if (!p)
+		return (1);
 	char c = *p;
 	*p = 0;
 	int r = delete_node_at_index(&(info->alias), get_node_index(info->alias, node_starts_with(info->alias, alias, -1)));
 	*p = c;
-	return r;
+	return (r);
 }
