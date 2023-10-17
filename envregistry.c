@@ -8,14 +8,13 @@
  */
 char **copyEnv(info_t *info)
 {
-       	if (!info->environ || info->env_changed)
+	if (!info->environ || info->env_changed)
 	{
 		info->environ = listToStrings(info->env);
 		info->env_changed = 0;
 	}
-	return info->environ;
+	return (info->environ);
 }
-
 /**
  * unsetEnv - Delete an environment variable.
  * @i: Argument structure.
@@ -29,20 +28,21 @@ int unsetEnv(info_t *i, char *v)
 	char *p;
 
 	if (!n || !v)
-		return 0;
+		return (0);
 
 	for (size_t j = 0; n; j++)
 	{
 		p = startsWith(n->str, v);
+
 		if (p && *p == '=')
 		{
 			i->env_changed = deleteNodeAtIndex(&(i->env), j);
-			j = -1;  // Reset j for the next iteration
+			j = -1;
 			n = i->env;
 		}
 		n = n->next;
 	}
-	return i->env_changed;
+	return (i->env_changed);
 }
 /**
  * setEnv - Add or update an environment variable.
@@ -57,11 +57,12 @@ int setEnv(info_t *i, char *var, char *value)
 	char *buf = NULL, *p;
 
 	if (!var || !value)
-		return 1;
+		return (1);
 
 	buf = malloc(_strlen(var) + _strlen(value) + 2);
+
 	if (!buf)
-		return 1;
+		return (1);
 
 	_strcpy(buf, var);
 	_strcat(buf, "=");
@@ -70,17 +71,18 @@ int setEnv(info_t *i, char *var, char *value)
 	for (list_t *node = i->env; node; node = node->next)
 	{
 		p = startsWith(node->str, var);
+
 		if (p && *p == '=')
 		{
 			free(node->str);
 			node->str = buf;
 			i->env_changed = 1;
-			return 0;
+			return (0);
 		}
 	}
 
 	addNodeEnd(i->env, buf, 0);
 	free(buf);
 	i->env_changed = 1;
-	return 0;
+	return (0);
 }

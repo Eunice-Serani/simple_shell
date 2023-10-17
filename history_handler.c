@@ -9,11 +9,13 @@
 char *historyFilePath(info_t *info)
 {
 	char *dir = _getenv(info, "HOME=");
+
 	if (!dir)
 		return (NULL);
 
 	size_t len = _strlen(dir) + _strlen(HIST_FILE) + 2;
 	char *buf = malloc(len);
+
 	if (!buf)
 		return (NULL);
 
@@ -34,12 +36,14 @@ int saveHistory(info_t *info)
 		return (-1);
 
 	int fd = open(filename, O_CREAT | O_TRUNC | O_RDWR, 0644);
+
 	free(filename);
 
 	if (fd == -1)
 		return (-1);
 
 	list_t *node = info->history;
+
 	while (node)
 	{
 		_putsfd(node->str, fd);
@@ -62,27 +66,34 @@ int _rdhistory(info_t *info)
 {
 	int linecount = 0;
 	char *file = get_history_file(info);
+
 	if (!file)
 		return (0);
 
 	int fd = open(file, O_RDONLY);
+
 	free(file);
+
 	if (fd == -1)
 		return (0);
 
 	struct stat st;
+
 	if (!fstat(fd, &st) && st.st_size > 1)
 	{
 		char *buf = malloc(st.st_size + 1);
+
 		if (buf)
 		{
 			ssize_t rd = read(fd, buf, st.st_size);
+
 			if (rd > 0)
 			{
 				buf[st.st_size] = '\0';
 					close(fd);
 
 					int last = 0;
+
 					for (int i = 0; i <= st.st_size; i++)
 					{
 						if (i == st.st_size || buf[i] == '\n')

@@ -17,15 +17,19 @@ void initInfo(info_t *info, char **av)
 {
 	info->name = av[0];
 	char *arg = info->arg;
+
 	if (arg)
 	{
 		char **args = (info->args) ? strtow(arg, " \t") : malloc(sizeof(char *) * 2);
+
 		if (args)
 		{
 			if (!arg) args[0] = _strdup(arg);
 			args[1] = NULL;
 			info->count = 0;
+
 			while (args && args[info->count]) info->count++;
+
 			replaceAliasesAndVars(info);
 		}
 	}
@@ -45,6 +49,7 @@ void freeRes(info_t *info, int freeAll)
 	{
 		if (!info->cmd_buf) free(info->arg);
 		list_t *lists[] = {&(info->env), &(info->history), &(info->alias)};
+
 		for (int i = 0; i < 3; i++)
 		{
 			freeLst(lists[i]);
@@ -52,6 +57,7 @@ void freeRes(info_t *info, int freeAll)
 		ffree(info->environ);
 		info->environ = NULL;
 		bfree((void **)info->cmd_buf);
+
 		if (info->readfd > 2) close(info->readfd);
 		_putchar(BUF_FLUSH);
 	}
