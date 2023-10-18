@@ -1,64 +1,73 @@
-#include "_v2shell.h"
+#include "my_shell.h"
 /**
- * resetInfo - Reset info_t fields to defaults.
- * @info: Pointer to info_t struct.
+ *resetInfo - initializes info_t struct
+ *@info: struct address
  */
 void resetInfo(info_t *info)
 {
-	info->arguments = info->argumentValues = info->path = NULL;
-	info->argumentCount = 0;
+	info->arg = NULL;
+	info->argv = NULL;
+	info->path = NULL;
+	info->argc = 0;
 }
+
 /**
- * initInfo - Initialize info_t struct.
- * @info: Pointer to info_t structure.
- * @av: Argument vector.
+ * initInfo - initializes info_t struct
+ * @info: structing the address
+ * @av: argument vector
  */
 void initInfo(info_t *info, char **av)
 {
-	info->name = av[0];
-	char *arg = info->arg;
+	int i = 0;
 
-	if (arg)
+	info->fname = av[0];
+	if (info->arg)
 	{
-		char **args = (info->args) ? strtow(arg, " \t") : malloc(sizeof(char *) * 2);
-
-		if (args)
+		info->argv = strtow(info->arg, " \t");
+		if (!info->argv)
 		{
-			if (!arg) args[0] = _strdup(arg);
-			args[1] = NULL;
-			info->count = 0;
 
-			while (args && args[info->count]) info->count++;
-
-			replaceAliasesAndVars(info);
+			info->argv = malloc(sizeof(char *) * 2);
+			if (info->argv)
+			{
+				info->argv[0] = _strdup(info->arg);
+				info->argv[1] = NULL;
+			}
 		}
+		for (i = 0; info->argv && info->argv[i]; i++)
+			;
+		info->argc = i;
+
+		replace_alias(info);
+		replace_vars(info);
 	}
 }
 
 /**
- * freeRes - Frees allocated resources in the info_t struct.
- * @info: Pointer to the info_t structure.
- * @freeAll: 1 to free all resources, 0 otherwise.
+ * freeRes - frees info_t struct fields
+ * @info: struct address
+ * @all: true if freeing all fields
  */
-void freeRes(info_t *info, int freeAll)
+void freeRes(info_t *info, int all)
 {
 	ffree(info->argv);
-	info->argv = info->path = NULL;
-
-	if (freeAll)
+	info->argv = NULL;
+	info->path = NULL;
+	if (all)
 	{
-		if (!info->cmd_buf) free(info->arg);
-		list_t *lists[] = {&(info->env), &(info->history), &(info->alias)};
-
-		for (int i = 0; i < 3; i++)
-		{
-			freeLst(lists[i]);
-		}
+		if (!info->cmd_buf)
+			free(info->arg);
+		if (info->env)
+			free_list(&(info->env));
+		if (info->history)
+			free_list(&(info->history));
+		if (info->alias)
+			free_list(&(info->alias));
 		ffree(info->environ);
-		info->environ = NULL;
+			info->environ = NULL;
 		bfree((void **)info->cmd_buf);
-
-		if (info->readfd > 2) close(info->readfd);
+		if (info->readfd > 2)
+			close(info->readfd);
 		_putchar(BUF_FLUSH);
 	}
 }
