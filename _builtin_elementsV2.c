@@ -1,76 +1,136 @@
-#include "myshell.h"
-
+# include "my_shell.h"
 /**
- * define_alias - Define an alias within the shell.
- * @parameters: A structure holding relevant information.
- * @alias_string: The string to be defined as an alias.
- *
- * Return: 0 upon success, 1 on error.
- */
-int define_alias(parameters_t *parameters, char *alias_string)
-{
-	char *equal_position = _find_char(alias_string, '=');
-
-	if (!equal_position)
-		return (1);
-	if (!*++equal_position)
-		return (forget_alias(parameters, alias_string));
-	forget_alias(parameters, alias_string);
-	return (append_to_aliases(&(parameters->aliases), alias_string, 0) == NULL);
-}
-/**
- * display_alias - Display an alias string.
- * @alias_node: The alias node containing the string to be displayed.
- *
- * Return: 0 on success, 1 on error.
- */
-int display_alias(list_t *alias_node)
-{
-	char *equal_sign = NULL, *alias_str = NULL;
-
-	if (alias_node)
-	{
-		equal_sign = _strchr(alias_node->str, '=');
-		for (alias_str = alias_node->str; alias_str <= equal_sign; alias_str++)
-			_putchar(*alias_str);
-		_putchar('\'');
-		_puts(equal_sign + 1);
-		_puts("'\n");
-		return (0);
-	}
-	return (1);
-}
-/**
- * Manage alias settings - Similar to the 'alias' command.
- * @param info: A structure containing potential arguments.
+ * history - Display command history with line numbers.
+ * @data: Data structure.
  *
  * Return: Always 0.
  */
-int manageAlias(info_t *info)
+int history(info_t *data)
 {
-	char *equalSign;
-	int i = 0;
+	display_command_history(data->history);
+	return (0);
+}
+
+/**
+ * remove_alias - Remove an alias assignment.
+ * @data: Data structure.
+ * @str: Alias string to remove.
+ *
+ * Return: 0 on success, 1 on failure.
+ */
+int remove_alias(info_t *data, char *str)
+{
+	char *eq, tmp;
+	int result;
+
+	eq = find_char(str, '=');
+	if (!eq)
+	{
+		return (1);
+	}
+
+	tmp = *eq;
+	*eq = '\0';
+
+	result = del_alias_node(&(data->aliases),
+		find_alias_node(data->aliases, alias_starts_with(data->aliases, str, -1)));
+
+	*eq = tmp;
+
+	return (result);
+}
+
+/**
+ * set_alias - Assign an alias to a string.
+ * @data: Data structure.
+ * @str: Alias string to assign.
+ *
+ * Return: 0 on success, 1 on failure.
+ */
+int set_alias(info_t *data, char *str)
+{
+	char *eq;
+
+	eq = find_char(str, '=');
+	if (!eq)
+	{
+		return (1);
+	}
+
+	if (!*++eq)
+	{
+		return (remove_alias(data, str));
+	}
+
+	remove_alias(data, str);
+	return (add_alias_node_end(&(data->aliases), str, 0) == NULL);
+}
+
+/**
+ * print_alias - Print an assigned alias.
+ * @node: Alias node to print.
+ *
+ * Return: 0 on success, 1 on failure.
+ */
+int print_alias(list_t *node)
+{
+	char *eq, alias = NULL;
+
+	if (node)
+	{
+		eq = find_char(node->str, '=');
+		for (alias = node->str; alias <= eq; alias++)
+		{
+			print_char(*alias);
+		}
+
+		print_char('\'');
+		print_string(eq + 1);
+		print_string("'\n");
+		return (0);
+	}
+
+	return (1);
+}
+
+/**
+ * alias_command - Mimic the alias built-in command.
+ * @data: Data structure.
+ *
+ * Return: Always 0.
+ */
+int alias_command(info_t *data)
+{
+	int index = 0;
+	char *eq = NULL;
 	list_t *node = NULL;
 
-	if (info->argc == 1)
+	if (data->argc == 1)
 	{
-		node = info->alias;
-	while (node)
-	{
-		displayAlias(node);
-		node = node->next;
-	}
-	return (0);
+		node = data->aliases;
+		while (node)
+		{
+			print_alias(node);
+			node = node->next;
+		}
+
+		return (0);
 	}
 
-	for (i = 1; info->argv[i]; i++)
+	for (index = 1; data->argv[index]; index++)
 	{
-		equalSign = _strchr(info->argv[i], '=');
-		if (equalSign)
-			setAlias(info, info->argv[i]);
+		eq = find_char(data->argv[index], '=');
+		if (eq)
+		{
+			set_alias(data, data->argv[index]);
+		}
 		else
-			displayAlias(nodeStartsWith(info->alias, info->argv[i], '='));
+		{
+			print_alias(find_alias_node(data->aliases,
+						alias_starts_with(data->aliases, data->argv[index], '=')));
+		}
 	}
 
 	return (0);
 }
+
