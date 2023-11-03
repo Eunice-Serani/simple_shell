@@ -114,3 +114,4 @@ git shortlog -se \
   | sed -e '/^CommitSyncScript.*$/d' \
   > AUTHORS
   ```
+Mudenyo Grifins And Eunice anable
